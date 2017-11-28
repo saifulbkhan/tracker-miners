@@ -1,0 +1,11 @@
+[TestFile]
+Filename=test-image-4.CR2
+Bugzilla=
+Comment=Basic RAW example
+
+[Metadata]
+a=nmm:Photo
+nfo_equipment=urn:equipment:Canon:Canon%20EOS%2070D:
+nfo_width=5472
+nfo_height=3648
+nfo_orientation=nfo:orientation-left

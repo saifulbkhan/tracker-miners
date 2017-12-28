@@ -16,13 +16,12 @@ AM_CPPFLAGS =                                           \
 
 modules_LTLIBRARIES =
 
-# Audio files (MP3, MPC, FLAC, MP4, ASF, AIFF, WAV, TrueAudio, WavPack,
-# Ogg FLAC, Ogg Vorbis and Speex)
-if HAVE_TAGLIB
-modules_LTLIBRARIES += libwriteback-taglib.la
-libwriteback_taglib_la_SOURCES = tracker-writeback-taglib.c
-libwriteback_taglib_la_LDFLAGS = $(module_flags)
-libwriteback_taglib_la_LIBADD = $(BUILD_LIBS) $(GLIB2_LIBS) $(TAGLIB_LIBS)
+# Audio files (MP3, FLAC, MP4, Ogg Vorbis)
+if HAVE_GSTREAMER_AUDIO_WRITEBACK
+modules_LTLIBRARIES += libwriteback-gstreamer.la
+libwriteback_gstreamer_la_SOURCES = tracker-writeback-gstreamer.c
+libwriteback_gstreamer_la_LDFLAGS = $(module_flags)
+libwriteback_gstreamer_la_LIBADD = $(BUILD_LIBS) $(GLIB2_LIBS) $(GSTREAMER_WRITEBACK_LIBS)
 endif
 
 # XMP

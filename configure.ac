@@ -224,9 +224,9 @@ LIBEXIF_REQUIRED=0.6
 LIBGSF_REQUIRED=1.14.24
 LIBOSINFO_REQUIRED=0.2.9
 EXEMPI_REQUIRED=2.1.0
-TAGLIB_REQUIRED=1.6
 LIBGRSS_REQUIRED=0.7
 GSTREAMER_REQUIRED=0.10.31
+GSTREAMER_WRITEBACK_REQUIRED=1.0
 GUPNP_DLNA_REQUIRED=0.9.4
 LIBPNG_REQUIRED=1.2
 TRACKER_CORE_REQUIRED=1.99
@@ -843,28 +843,34 @@ fi
 AM_CONDITIONAL(HAVE_TRACKER_MINER_RSS, test "x$have_tracker_miner_rss" = "xyes")
 
 ####################################################################
-# Check for tracker-writeback: Taglib for audio writeback support
+# Check for tracker-writeback: GStreamer for audio writeback support
 ####################################################################
 
-AC_ARG_ENABLE(taglib,
-              AS_HELP_STRING([--enable-taglib],
+AC_ARG_ENABLE(gstreamer-audio-writeback,
+              AS_HELP_STRING([--enable-gstreamer-audio-writeback],
                              [enable writeback for audio files [[default=auto]]]),
-              [enable_taglib=$enableval],
-              [enable_taglib=auto])
+              [enable_gstreamer_audio_writeback=$enableval],
+              [enable_gstreamer_audio_writeback=auto])
 
-if test "x$enable_taglib" != "xno" ; then
-   PKG_CHECK_MODULES(TAGLIB,
-                     [taglib_c >= $TAGLIB_REQUIRED],
-                     [have_taglib=yes],
-                     [have_taglib=no])
+if test "x$enable_gstreamer_audio_writeback" != "xno" ; then
+   PKG_CHECK_MODULES(GSTREAMER_WRITEBACK,
+                     [gstreamer-1.0 >= $GSTREAMER_WRITEBACK_REQUIRED]
+                     [gstreamer-tag-1.0 >= $GSTREAMER_WRITEBACK_REQUIRED]
+                     [gstreamer-audio-1.0 >= $GSTREAMER_WRITEBACK_REQUIRED],
+                     [have_gstreamer_audio_writeback=yes],
+                     [have_gstreamer_audio_writeback=no])
 
-   TRACKER_WRITEBACK_CFLAGS="$TRACKER_WRITEBACK_CFLAGS $TAGLIB_CFLAGS"
-   TRACKER_WRITEBACK_LIBS="$TRACKER_WRITEBACK_LIBS $TAGLIB_LIBS"
+   TRACKER_WRITEBACK_CFLAGS="$TRACKER_WRITEBACK_CFLAGS $GSTREAMER_WRITEBACK_CFLAGS"
+   TRACKER_WRITEBACK_LIBS="$TRACKER_WRITEBACK_LIBS $GSTREAMER_WRITEBACK_LIBS"
+
+   if test "x$have_gstreamer_audio_writeback" = "xyes"; then
+      AC_DEFINE(HAVE_GSTREAMER_AUDIO_WRITEBACK, [], [Define if we have gstreamer audio writeback])
+   fi
 else
-   have_taglib="no  (disabled)"
+   have_gstreamer_audio_writeback="no  (disabled)"
 fi
 
-AM_CONDITIONAL(HAVE_TAGLIB, test "x$have_taglib" = "xyes")
+AM_CONDITIONAL(HAVE_GSTREAMER_AUDIO_WRITEBACK, test "x$have_gstreamer_audio_writeback" = "xyes")
 
 ##################################################################
 # Check for tracker-resdump
@@ -1881,7 +1887,7 @@ if test "x$enable_tracker_writeback" != "xno" ; then
 echo "
 Writeback Formats:
 
-	Audio files using Taglib:               $have_taglib
+	Audio files using Gstreamer:            $have_gstreamer_audio_writeback
 	XMP:                                    $have_exempi"
 fi
 
